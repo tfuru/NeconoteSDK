@@ -88,6 +88,8 @@ static int NECONOTE_BLE_PERIOD = 20000;
 
 //ON 操作
 - (void) on:(NeconoteCallback)callback{
+    //二重押し防止
+    if(_toggle_status == NO) return;
     NSLog(@"ON");
     _toggle_status = NO;
     [Konashi pwmDuty:KonashiDigitalIO0 duty:NECONOTE_BLE_DUTY_ON];
@@ -100,6 +102,8 @@ static int NECONOTE_BLE_PERIOD = 20000;
 
 //OFF 操作
 - (void) off:(NeconoteCallback)callback{
+    ////二重押し防止
+    if(_toggle_status == YES) return;
     NSLog(@"OFF");
     _toggle_status = YES;
     [Konashi pwmDuty:KonashiDigitalIO0 duty:NECONOTE_BLE_DUTY_OFF];
