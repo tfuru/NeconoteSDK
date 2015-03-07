@@ -16,6 +16,9 @@ typedef void(^NeconoteToggleCallback)(BOOL flg);
 //インスタンス取得
 + (NeconoteBLE *) shared;
 
+//切断
+- (void) disconnect;
+
 //指定した名前の neconote を検索して接続する
 - (void) findWithName:(NSString*)name ready:(NeconoteCallback)readyCallback;
 

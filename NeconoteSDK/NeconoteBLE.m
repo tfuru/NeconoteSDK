@@ -20,13 +20,16 @@
     
     //読み込み完了時のコールバック
     NeconoteCallback _readyCallback;
+    
+    //PWMタイムアウト タイマー
+    NSTimer* pwmTimeOutTimer;
 }
 @end
 
 @implementation NeconoteBLE
 
 //PWMタイムアウト
-static NSTimeInterval PWM_TIMEOUT = 30;
+static NSTimeInterval PWM_TIMEOUT = 0.5;
 
 //初期位置 ニュ－トラル位置
 static int NECONOTE_BLE_DUTY_DEFAULT  = 1520;
@@ -60,8 +63,8 @@ static int NECONOTE_BLE_PERIOD = 20000;
 - (id) initialize {
     //ネコのリスト
     _nekoList = @{@"1":@"konashi2.0-f0126",
-                  @"2":@"konashi2.0-f0126",
-                  @"3":@"konashi2.0-f0126"};
+                  @"2":@"konashi#4-1485",
+                  @"3":@"konashi2.0-f0125"};
     
     _toggle_status = NO;
 
@@ -71,6 +74,11 @@ static int NECONOTE_BLE_PERIOD = 20000;
     [Konashi addObserver:self selector:@selector(ready) name:KonashiEventReadyToUseNotification];
     
     return self;
+}
+
+//切断
+- (void) disconnect{
+    [Konashi disconnect];
 }
 
 //指定した名前の neconote を検索して接続する
@@ -90,11 +98,14 @@ static int NECONOTE_BLE_PERIOD = 20000;
 - (void) on:(NeconoteCallback)callback{
     //二重押し防止
     if(_toggle_status == NO) return;
+    if(pwmTimeOutTimer != nil) return;
+    
     NSLog(@"ON");
     _toggle_status = NO;
     [Konashi pwmDuty:KonashiDigitalIO0 duty:NECONOTE_BLE_DUTY_ON];
     //タイマーでPWM停止
-    [NSTimer scheduledTimerWithTimeInterval:PWM_TIMEOUT block:^{
+    pwmTimeOutTimer = [NSTimer scheduledTimerWithTimeInterval:PWM_TIMEOUT block:^{
+        pwmTimeOutTimer = nil;
         [Konashi pwmDuty:KonashiDigitalIO0 duty:0];
         callback();
     } repeats:NO];
@@ -104,11 +115,14 @@ static int NECONOTE_BLE_PERIOD = 20000;
 - (void) off:(NeconoteCallback)callback{
     ////二重押し防止
     if(_toggle_status == YES) return;
+    if(pwmTimeOutTimer != nil) return;
+    
     NSLog(@"OFF");
     _toggle_status = YES;
     [Konashi pwmDuty:KonashiDigitalIO0 duty:NECONOTE_BLE_DUTY_OFF];
     //タイマーでPWM停止
-    [NSTimer scheduledTimerWithTimeInterval:PWM_TIMEOUT block:^{
+    pwmTimeOutTimer = [NSTimer scheduledTimerWithTimeInterval:PWM_TIMEOUT block:^{
+        pwmTimeOutTimer = nil;
         [Konashi pwmDuty:KonashiDigitalIO0 duty:0];
         callback();
     } repeats:NO];
@@ -116,6 +130,7 @@ static int NECONOTE_BLE_PERIOD = 20000;
 
 // ON,OFF くり返し
 - (void) toggle:(NeconoteToggleCallback)callback{
+    if(pwmTimeOutTimer != nil) return;
     NSLog(@"TOGGLE");
     if(_toggle_status){
         [self on:^{

@@ -14,6 +14,7 @@
 - (IBAction)clickBtnOn:(id)sender;
 - (IBAction)clickBtnOff:(id)sender;
 - (IBAction)clickBtnToggle:(id)sender;
+- (IBAction)clickBtnDisconnect:(id)sender;
 
 @end
 

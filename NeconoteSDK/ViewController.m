@@ -30,8 +30,7 @@
     [[NeconoteBLE shared] findWithName:@"1" ready:^{
         //接続完了した
         NSLog(@"findWithName ready");
-    }];
-    
+    }];    
 }
 
 - (IBAction)clickBtnOn:(id)sender {
@@ -55,6 +54,12 @@
     [[NeconoteBLE shared] toggle:^(BOOL flg) {
         NSLog(@"toggle complete flg:%@",(flg==YES)?@"YES":@"NO");
     }];
+}
+
+
+- (IBAction)clickBtnDisconnect:(id)sender {
+    //切断処理
+    [[NeconoteBLE shared] disconnect];
 }
 
 @end
