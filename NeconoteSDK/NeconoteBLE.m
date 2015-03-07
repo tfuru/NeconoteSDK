@@ -29,7 +29,7 @@
 @implementation NeconoteBLE
 
 //PWMタイムアウト
-static NSTimeInterval PWM_TIMEOUT = 0.5;
+static NSTimeInterval PWM_TIMEOUT = 1.0;
 
 //初期位置 ニュ－トラル位置
 static int NECONOTE_BLE_DUTY_DEFAULT  = 1520;
@@ -62,9 +62,9 @@ static int NECONOTE_BLE_PERIOD = 20000;
 //初期化
 - (id) initialize {
     //ネコのリスト
-    _nekoList = @{@"1":@"konashi2.0-f0126",
-                  @"2":@"konashi#4-1485",
-                  @"3":@"konashi2.0-f0125"};
+    _nekoList = @{@"1":@"konashi2-f0126f",
+                  @"2":@"konashi2-f01268",
+                  @"3":@"konashi2-f0125b"};
     
     _toggle_status = NO;
 
@@ -78,6 +78,7 @@ static int NECONOTE_BLE_PERIOD = 20000;
 
 //切断
 - (void) disconnect{
+    NSLog(@"disconnect");
     [Konashi disconnect];
 }
 
@@ -156,7 +157,6 @@ static int NECONOTE_BLE_PERIOD = 20000;
 //操作できるようになった
 -(void) ready{
     NSLog(@"READY");
-    
     NSLog(@"peripheralName:%@",[Konashi peripheralName]);
 
     //IOピンの初期化

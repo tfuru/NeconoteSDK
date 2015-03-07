@@ -27,7 +27,7 @@
 
 - (IBAction)clickBtnFindWithName:(id)sender {
     //Neconoteに接続
-    [[NeconoteBLE shared] findWithName:@"1" ready:^{
+    [[NeconoteBLE shared] findWithName:@"2" ready:^{
         //接続完了した
         NSLog(@"findWithName ready");
     }];    
